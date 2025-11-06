@@ -72,7 +72,7 @@ const FeedContainer = ({ refreshTrigger, onCreatePostClick }) => {
       </div>
 
       <div className="feed-container space-y-6">
-        {posts.map((post, index) => (
+{posts.map((post, index) => (
           <PostCard 
             key={post.Id} 
             post={post}

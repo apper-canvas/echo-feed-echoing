@@ -16,6 +16,7 @@ const [isLiked, setIsLiked] = useState(post.isLiked || false);
   const [comments, setComments] = useState([]);
   const [commentsLoading, setCommentsLoading] = useState(false);
   const [showCommentForm, setShowCommentForm] = useState(false);
+  const [commentCount, setCommentCount] = useState(0);
 
 const handleLike = async () => {
     const previousLiked = isLiked;
@@ -41,15 +42,17 @@ const handleLike = async () => {
     }
   };
 
-  const loadComments = async () => {
+const loadComments = async () => {
     if (commentsLoading) return;
     
     setCommentsLoading(true);
     try {
       const postComments = await commentService.getByPostId(post.Id);
       setComments(postComments);
+      setCommentCount(postComments.length);
     } catch (error) {
       console.error("Error loading comments:", error);
+      toast.error("Failed to load comments");
     } finally {
       setCommentsLoading(false);
     }
@@ -69,6 +72,7 @@ const handleLike = async () => {
     if (!showComments) {
       setShowComments(true);
     }
+    toast.success("Comment added successfully!");
   };
 
   const handleAddCommentClick = async () => {
@@ -82,6 +86,20 @@ const handleLike = async () => {
       }
     }
   };
+
+  // Load initial comment count
+  useEffect(() => {
+    const loadCommentCount = async () => {
+      try {
+        const postComments = await commentService.getByPostId(post.Id);
+        setCommentCount(postComments.length);
+      } catch (error) {
+        console.error("Error loading comment count:", error);
+      }
+    };
+    
+    loadCommentCount();
+  }, [post.Id]);
 return (
     <div className={cn(
       "bg-white rounded-xl border border-gray-200 p-6 transition-all duration-200 hover:shadow-lg hover:-translate-y-1 group animate-slide-down shadow-md",
@@ -113,7 +131,7 @@ return (
         </div>
       </div>
       
-      <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
+<div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <button
             onClick={handleToggleComments}
@@ -121,7 +139,7 @@ return (
           >
             <ApperIcon name="MessageSquare" size={12} />
             <span>
-              {comments.length > 0 ? `${comments.length} ${comments.length === 1 ? 'comment' : 'comments'}` : 'Comments'}
+              {commentCount > 0 ? `${commentCount} ${commentCount === 1 ? 'comment' : 'comments'}` : 'Comments'}
             </span>
           </button>
           
@@ -144,9 +162,21 @@ return (
         </div>
       </div>
 
-      {/* Comments Section */}
+{/* Comments Section */}
       {showComments && (
-        <div className="mt-4 border-t border-gray-100 pt-4 space-y-4">
+        <div className="mt-4 border-t border-gray-100 pt-4 space-y-4 animate-slide-down">
+          {!showCommentForm && (
+            <div className="flex justify-center">
+              <button
+                onClick={handleAddCommentClick}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white text-sm font-medium rounded-lg hover:bg-blue-600 transition-colors duration-200"
+              >
+                <ApperIcon name="Plus" size={14} />
+                Add Comment
+              </button>
+            </div>
+          )}
+          
           {showCommentForm && (
             <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
               <CommentForm
@@ -204,7 +234,7 @@ return (
               )} 
             />
             <span className="text-sm font-medium transition-colors duration-200">
-              {likeCount}
+{likeCount}
             </span>
           </button>
         </div>

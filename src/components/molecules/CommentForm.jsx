@@ -7,7 +7,7 @@ import { commentService } from "@/services/api/commentService";
 
 const CommentForm = ({ postId, parentId = null, onCommentAdded, onCancel, placeholder = "Write a comment..." }) => {
   const [content, setContent] = useState("");
-  const [author, setAuthor] = useState("");
+const [author, setAuthor] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
 
@@ -20,7 +20,7 @@ const CommentForm = ({ postId, parentId = null, onCommentAdded, onCancel, placeh
       newErrors.content = "Comment must be 280 characters or less";
     }
 
-    if (!author.trim()) {
+if (!author.trim()) {
       newErrors.author = "Name is required";
     }
 
@@ -43,13 +43,13 @@ const CommentForm = ({ postId, parentId = null, onCommentAdded, onCancel, placeh
         postId,
         parentId,
         content: content.trim(),
-        author: author.trim()
+author: author.trim()
       });
 
       toast.success(parentId ? "Reply added successfully!" : "Comment added successfully!");
       
       setContent("");
-      setAuthor("");
+setAuthor("");
       
       if (onCommentAdded) {
         onCommentAdded();
@@ -64,7 +64,8 @@ const CommentForm = ({ postId, parentId = null, onCommentAdded, onCancel, placeh
   };
 
   const handleCancel = () => {
-    setContent("");
+setContent("");
+    setAuthor("");
     setAuthor("");
     setErrors({});
     if (onCancel) {
@@ -76,7 +77,7 @@ const CommentForm = ({ postId, parentId = null, onCommentAdded, onCancel, placeh
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="flex gap-3">
+<div className="flex gap-3">
         <div className="w-8 h-8 bg-gradient-to-br from-gray-400 to-gray-500 rounded-full flex items-center justify-center flex-shrink-0">
           <ApperIcon name="User" size={16} className="text-white" />
         </div>
@@ -126,7 +127,7 @@ const CommentForm = ({ postId, parentId = null, onCommentAdded, onCancel, placeh
               <Button
                 type="submit"
                 size="sm"
-                disabled={isSubmitting || !content.trim() || !author.trim() || remainingChars < 0}
+disabled={isSubmitting || !content.trim() || !author.trim() || remainingChars < 0}
               >
                 {isSubmitting ? (
                   <div className="flex items-center gap-2">

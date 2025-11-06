@@ -92,7 +92,7 @@ export const commentService = {
       .filter(c => c.postId === parseInt(postId))
       .sort((a, b) => a.timestamp - b.timestamp); // Oldest first for comments
     
-    return organizeCommentsWithReplies(postComments);
+return organizeCommentsWithReplies(postComments);
   },
 
   async getById(id) {

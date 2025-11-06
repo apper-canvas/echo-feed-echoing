@@ -13,7 +13,7 @@ const CommentItem = ({ comment, onCommentAdded, level = 0 }) => {
   };
 
   const handleReplyAdded = () => {
-    setShowReplyForm(false);
+setShowReplyForm(false);
     if (onCommentAdded) {
       onCommentAdded();
     }
