@@ -1,58 +1,74 @@
 [
-  {
+{
     "Id": 1,
     "author": "Alex Rivera",
     "content": "Just finished reading an amazing book about the future of technology. The possibilities seem endless! 🚀",
     "timestamp": 1704067200000,
-    "createdAt": "2024-01-01T00:00:00.000Z"
+    "createdAt": "2024-01-01T00:00:00.000Z",
+    "likeCount": 12,
+    "isLiked": false
   },
   {
     "Id": 2,
     "author": "Sarah Chen",
     "content": "Beautiful sunset tonight. Sometimes the simple moments are the most meaningful.",
     "timestamp": 1704153600000,
-    "createdAt": "2024-01-02T00:00:00.000Z"
+    "createdAt": "2024-01-02T00:00:00.000Z",
+    "likeCount": 8,
+    "isLiked": false
   },
   {
     "Id": 3,
     "author": "Marcus Johnson",
     "content": "New coffee shop downtown has the best espresso I've had in years. Supporting local businesses feels great!",
     "timestamp": 1704240000000,
-    "createdAt": "2024-01-03T00:00:00.000Z"
+    "createdAt": "2024-01-03T00:00:00.000Z",
+    "likeCount": 15,
+    "isLiked": false
   },
   {
     "Id": 4,
     "author": "Emma Thompson",
     "content": "Working on a new art project today. There's something magical about creating something from nothing.",
     "timestamp": 1704326400000,
-    "createdAt": "2024-01-04T00:00:00.000Z"
+    "createdAt": "2024-01-04T00:00:00.000Z",
+    "likeCount": 6,
+    "isLiked": false
   },
   {
     "Id": 5,
     "author": "David Park",
     "content": "Learned something new today: the average person walks about 7,500 steps per day. Time to get moving! 👟",
     "timestamp": 1704412800000,
-    "createdAt": "2024-01-05T00:00:00.000Z"
+    "createdAt": "2024-01-05T00:00:00.000Z",
+    "likeCount": 9,
+    "isLiked": false
   },
   {
     "Id": 6,
     "author": "Lisa Wong",
     "content": "Rainy days are perfect for productivity. Got so much done from the comfort of my home office.",
     "timestamp": 1704499200000,
-    "createdAt": "2024-01-06T00:00:00.000Z"
+    "createdAt": "2024-01-06T00:00:00.000Z",
+    "likeCount": 4,
+    "isLiked": false
   },
   {
     "Id": 7,
     "author": "James Miller",
     "content": "Cooking dinner with fresh herbs from the garden. There's nothing quite like home-grown flavor.",
     "timestamp": 1704585600000,
-    "createdAt": "2024-01-07T00:00:00.000Z"
+    "createdAt": "2024-01-07T00:00:00.000Z",
+    "likeCount": 11,
+    "isLiked": false
   },
   {
     "Id": 8,
     "author": "Sofia Rodriguez",
     "content": "Finally finished that puzzle I've been working on for weeks. The satisfaction is real! 🧩",
     "timestamp": 1704672000000,
-    "createdAt": "2024-01-08T00:00:00.000Z"
+    "createdAt": "2024-01-08T00:00:00.000Z",
+    "likeCount": 7,
+    "isLiked": false
   }
 ]
