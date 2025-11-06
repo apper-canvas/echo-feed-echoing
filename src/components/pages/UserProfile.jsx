@@ -13,12 +13,14 @@ import ApperIcon from '@/components/ApperIcon';
 export default function UserProfile() {
   const { username } = useParams();
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
+const [user, setUser] = useState(null);
   const [posts, setPosts] = useState([]);
   const [postCount, setPostCount] = useState(0);
+  const [followerStats, setFollowerStats] = useState({ followers: 0, following: 0 });
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [followLoading, setFollowLoading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
   useEffect(() => {
     loadUserProfile();
   }, [username]);
@@ -30,11 +32,12 @@ export default function UserProfile() {
     setError(null);
     
 try {
-      // Load user data and posts in parallel
-      const [userData, userPosts, userPostCount] = await Promise.all([
+      // Load user data, posts, and following stats in parallel
+      const [userData, userPosts, userPostCount, stats] = await Promise.all([
         userService.getByUsername(username),
         userService.getUserPosts(username),
-        userService.getUserPostCount(username)
+        userService.getUserPostCount(username),
+        userService.getFollowerStats(username)
       ]);
       
       // Handle case where user doesn't exist
@@ -47,15 +50,53 @@ try {
         return;
       }
       
-      setUser(userData);
+setUser(userData);
       setPosts(userPosts || []);
       setPostCount(userPostCount || 0);
+      setFollowerStats(stats || { followers: 0, following: 0 });
+      
+      // Check if current user is following this profile (assuming currentUser is 'johndoe')
+      const currentUser = 'johndoe'; // In real app, this would come from auth context
+      if (currentUser !== username) {
+        const following = await userService.isFollowing(currentUser, username);
+        setIsFollowing(following);
+      }
     } catch (err) {
       console.error('Failed to load user profile:', err);
       setError(err.message || 'Failed to load user profile');
       toast.error(`Failed to load profile for @${username}`);
     } finally {
       setLoading(false);
+    }
+  }
+
+async function handleFollowToggle() {
+    const currentUser = 'johndoe'; // In real app, this would come from auth context
+    
+    if (currentUser === username) {
+      toast.error("You cannot follow yourself");
+      return;
+    }
+    
+    setFollowLoading(true);
+    
+    try {
+      if (isFollowing) {
+        await userService.unfollow(currentUser, username);
+        setIsFollowing(false);
+        setFollowerStats(prev => ({ ...prev, followers: prev.followers - 1 }));
+        toast.success(`Unfollowed @${username}`);
+      } else {
+        await userService.follow(currentUser, username);
+        setIsFollowing(true);
+        setFollowerStats(prev => ({ ...prev, followers: prev.followers + 1 }));
+        toast.success(`Now following @${username}`);
+      }
+    } catch (err) {
+      console.error('Follow action failed:', err);
+      toast.error(err.message || 'Failed to update follow status');
+    } finally {
+      setFollowLoading(false);
     }
   }
 
@@ -176,12 +217,51 @@ function handleRetry() {
                 )}
               </div>
               
-              <div className="mt-4 flex items-center gap-6">
+<div className="mt-4 flex items-center gap-6">
                 <div className="text-center">
                   <div className="text-xl font-bold text-slate-900">{postCount}</div>
                   <div className="text-sm text-slate-600">Posts</div>
                 </div>
+                <div className="text-center">
+                  <div className="text-xl font-bold text-slate-900">{followerStats.followers}</div>
+                  <div className="text-sm text-slate-600">Followers</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-xl font-bold text-slate-900">{followerStats.following}</div>
+                  <div className="text-sm text-slate-600">Following</div>
+                </div>
               </div>
+              
+              {/* Follow Button - only show if not viewing own profile */}
+              {username !== 'johndoe' && (
+                <div className="mt-4">
+                  <Button
+                    onClick={handleFollowToggle}
+                    disabled={followLoading}
+                    variant={isFollowing ? "outline" : "default"}
+                    className={`min-w-[120px] ${
+                      isFollowing 
+                        ? 'text-slate-700 border-slate-300 hover:bg-slate-50' 
+                        : 'bg-blue-600 hover:bg-blue-700 text-white'
+                    }`}
+                  >
+                    {followLoading ? (
+                      <div className="flex items-center gap-2">
+                        <ApperIcon name="Loader2" size={16} className="animate-spin" />
+                        <span>{isFollowing ? 'Unfollowing...' : 'Following...'}</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2">
+                        <ApperIcon 
+                          name={isFollowing ? "UserMinus" : "UserPlus"} 
+                          size={16} 
+                        />
+                        <span>{isFollowing ? 'Unfollow' : 'Follow'}</span>
+                      </div>
+                    )}
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         </div>
