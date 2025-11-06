@@ -49,8 +49,12 @@ export default function UserProfile() {
     }
   }
 
-  function handleBackClick() {
+function handleBackClick() {
     navigate('/');
+  }
+
+  function handleRetry() {
+    loadUserProfile();
   }
 
   function handleRetry() {

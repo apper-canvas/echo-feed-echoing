@@ -1,5 +1,6 @@
 import { formatDistanceToNow } from "date-fns";
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { commentService } from "@/services/api/commentService";
 import { postService } from "@/services/api/postService";
@@ -119,11 +120,14 @@ return (
           </div>
         </div>
         
-        <div className="flex-1 min-w-0">
+<div className="flex-1 min-w-0">
           <div className="flex items-center gap-3 mb-3">
-            <h4 className="font-bold text-gray-900 text-lg group-hover:text-primary transition-colors duration-200">
+            <Link 
+              to={`/profile/${post.author}`}
+              className="font-bold text-gray-900 text-lg group-hover:text-primary transition-colors duration-200 hover:underline"
+            >
               {post.author}
-            </h4>
+            </Link>
             <div className="flex items-center gap-1 text-sm text-secondary bg-gray-100 px-2 py-1 rounded-full group-hover:bg-gray-200 transition-colors duration-200">
               <ApperIcon name="Clock" size={12} />
               {timeAgo}

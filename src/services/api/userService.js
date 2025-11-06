@@ -15,7 +15,7 @@ export const userService = {
     return [...users];
   },
 
-  async getByUsername(username) {
+async getByUsername(username) {
     await delay(200);
     const user = users.find(u => u.username === username);
     if (!user) {
@@ -33,7 +33,7 @@ export const userService = {
     return { ...user };
   },
 
-  async getUserPosts(username) {
+async getUserPosts(username) {
     await delay(250);
     const user = users.find(u => u.username === username);
     if (!user) {
@@ -46,8 +46,7 @@ export const userService = {
     
     return userPosts;
   },
-
-  async getUserPostCount(username) {
+async getUserPostCount(username) {
     await delay(100);
     const user = users.find(u => u.username === username);
     if (!user) {
