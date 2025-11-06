@@ -1,4 +1,5 @@
 import postsData from "../mockData/posts.json";
+import { notificationService } from '@/services/api/notificationService';
 
 const STORAGE_KEY = "echo_feed_posts";
 
@@ -107,7 +108,7 @@ savePosts();
     return { ...deletedPost };
   },
 
-  async likePost(id) {
+async likePost(id) {
     await delay(200);
     const index = posts.findIndex(p => p.Id === parseInt(id));
     
@@ -125,6 +126,18 @@ savePosts();
       isLiked: true,
       likeCount: (post.likeCount || 0) + 1
     };
+
+    // Create notification for the post author (if not liking own post)
+    try {
+      await notificationService.create({
+        type: 'like',
+        message: `liked your post`,
+        fromUsername: 'current_user', // In a real app, this would be the logged-in user
+        relatedPostId: post.Id
+      });
+    } catch (err) {
+      console.log('Failed to create like notification');
+    }
 
     savePosts();
     return { ...posts[index] };

@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { commentService } from "@/services/api/commentService";
 import { postService } from "@/services/api/postService";
+import { notificationService } from "@/services/api/notificationService";
 import ApperIcon from "@/components/ApperIcon";
 import CommentItem from "@/components/molecules/CommentItem";
 import CommentForm from "@/components/molecules/CommentForm";
@@ -75,11 +76,24 @@ const loadComments = async () => {
     }
   };
 
-  const handleCommentAdded = async () => {
+const handleCommentAdded = async () => {
     await loadComments();
     if (!showComments) {
       setShowComments(true);
     }
+    
+    // Create notification for the post author (if not commenting on own post)
+    try {
+      await notificationService.create({
+        type: 'comment',
+        message: `commented on your post`,
+        fromUsername: 'current_user', // In a real app, this would be the logged-in user
+        relatedPostId: post.Id
+      });
+    } catch (err) {
+      console.log('Failed to create comment notification');
+    }
+    
     toast.success("Comment added successfully!");
   };
 

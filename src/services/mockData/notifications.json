@@ -1,0 +1,47 @@
+[
+  {
+    "Id": 1,
+    "type": "like",
+    "message": "sarah_chen liked your post",
+    "fromUsername": "sarah_chen",
+    "relatedPostId": 1,
+    "isRead": false,
+    "createdAt": "2024-01-15T14:30:00.000Z"
+  },
+  {
+    "Id": 2,
+    "type": "comment",
+    "message": "mike_dev commented on your post",
+    "fromUsername": "mike_dev",
+    "relatedPostId": 2,
+    "isRead": false,
+    "createdAt": "2024-01-15T13:45:00.000Z"
+  },
+  {
+    "Id": 3,
+    "type": "follow",
+    "message": "alex_design started following you",
+    "fromUsername": "alex_design",
+    "relatedPostId": null,
+    "isRead": true,
+    "createdAt": "2024-01-15T12:15:00.000Z"
+  },
+  {
+    "Id": 4,
+    "type": "like",
+    "message": "emma_writes liked your post",
+    "fromUsername": "emma_writes",
+    "relatedPostId": 3,
+    "isRead": true,
+    "createdAt": "2024-01-15T11:20:00.000Z"
+  },
+  {
+    "Id": 5,
+    "type": "comment",
+    "message": "david_photo commented on your post",
+    "fromUsername": "david_photo",
+    "relatedPostId": 1,
+    "isRead": true,
+    "createdAt": "2024-01-15T10:30:00.000Z"
+  }
+]

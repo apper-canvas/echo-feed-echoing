@@ -1,6 +1,9 @@
-import usersData from '@/services/mockData/users.json';
-import followingData from '@/services/mockData/followingRelationships.json';
-import { postService } from '@/services/api/postService';
+import usersData from "@/services/mockData/users.json";
+import followingData from "@/services/mockData/followingRelationships.json";
+import { postService } from "@/services/api/postService";
+import { notificationService } from "@/services/api/notificationService";
+import React from "react";
+import Error from "@/components/ui/Error";
 
 // Create a copy to avoid mutating the original data
 let users = [...usersData];
@@ -93,10 +96,23 @@ async getUserPostCount(username) {
     }
     
     // Add the relationship
+// Add the relationship
     followingRelationships.push({
       followerId: follower.Id,
       followingId: following.Id
     });
+    
+    // Create notification for the user being followed
+    try {
+      await notificationService.create({
+        type: 'follow',
+        message: `started following you`,
+        fromUsername: followerUsername,
+        relatedPostId: null
+      });
+    } catch (err) {
+      console.log('Failed to create follow notification');
+}
     
     return true;
   },

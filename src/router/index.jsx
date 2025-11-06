@@ -4,6 +4,7 @@ import { Suspense, lazy } from "react";
 // Lazy load components
 const Feed = lazy(() => import("@/components/pages/Feed"));
 const UserProfile = lazy(() => import("@/components/pages/UserProfile"));
+const Notifications = lazy(() => import("@/components/pages/Notifications"));
 const NotFound = lazy(() => import("@/components/pages/NotFound"));
 
 // Suspense fallback component
@@ -35,6 +36,14 @@ const mainRoutes = [
     element: (
       <Suspense fallback={<SuspenseFallback />}>
         <UserProfile />
+      </Suspense>
+    )
+},
+  {
+    path: "notifications",
+    element: (
+      <Suspense fallback={<SuspenseFallback />}>
+        <Notifications />
       </Suspense>
     )
   },
