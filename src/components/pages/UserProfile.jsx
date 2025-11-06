@@ -29,7 +29,7 @@ export default function UserProfile() {
     setLoading(true);
     setError(null);
     
-    try {
+try {
       // Load user data and posts in parallel
       const [userData, userPosts, userPostCount] = await Promise.all([
         userService.getByUsername(username),
@@ -37,12 +37,22 @@ export default function UserProfile() {
         userService.getUserPostCount(username)
       ]);
       
+      // Handle case where user doesn't exist
+      if (!userData) {
+        setUser(null);
+        setPosts([]);
+        setPostCount(0);
+        setError(`User @${username} not found`);
+        toast.error(`User @${username} doesn't exist`);
+        return;
+      }
+      
       setUser(userData);
-      setPosts(userPosts);
-      setPostCount(userPostCount);
+      setPosts(userPosts || []);
+      setPostCount(userPostCount || 0);
     } catch (err) {
       console.error('Failed to load user profile:', err);
-      setError(err.message);
+      setError(err.message || 'Failed to load user profile');
       toast.error(`Failed to load profile for @${username}`);
     } finally {
       setLoading(false);

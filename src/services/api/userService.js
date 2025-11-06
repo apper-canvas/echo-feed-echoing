@@ -19,7 +19,7 @@ async getByUsername(username) {
     await delay(200);
     const user = users.find(u => u.username === username);
     if (!user) {
-      throw new Error(`User with username "${username}" not found`);
+      return null;
     }
     return { ...user };
   },
@@ -37,7 +37,7 @@ async getUserPosts(username) {
     await delay(250);
     const user = users.find(u => u.username === username);
     if (!user) {
-      throw new Error(`User with username "${username}" not found`);
+      return [];
     }
     
     // Get all posts and filter by author username
