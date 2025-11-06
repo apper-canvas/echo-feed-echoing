@@ -53,11 +53,7 @@ function handleBackClick() {
     navigate('/');
   }
 
-  function handleRetry() {
-    loadUserProfile();
-  }
-
-  function handleRetry() {
+function handleRetry() {
     loadUserProfile();
   }
 
