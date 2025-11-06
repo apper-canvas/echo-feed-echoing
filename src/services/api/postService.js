@@ -61,6 +61,7 @@ const newPost = {
       content: postData.content.trim(),
       timestamp: now,
       createdAt: new Date(now).toISOString(),
+      images: postData.images || [],
       comments: []
     };
 

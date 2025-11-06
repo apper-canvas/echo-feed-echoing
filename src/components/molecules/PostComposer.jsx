@@ -7,16 +7,56 @@ import ApperIcon from "@/components/ApperIcon";
 import { cn } from "@/utils/cn";
 
 const PostComposer = ({ onPostCreate }) => {
-  const [content, setContent] = useState("");
+const [content, setContent] = useState("");
   const [author, setAuthor] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
-
+  const [selectedImages, setSelectedImages] = useState([]);
   const maxLength = 500;
   const warningThreshold = 400; // 80% of max length
   const characterCount = content.length;
   const isOverLimit = characterCount > maxLength;
   const showWarning = characterCount >= warningThreshold;
+
+const handleImageUpload = (e) => {
+    const files = Array.from(e.target.files);
+    
+    if (files.length + selectedImages.length > 4) {
+      toast.error("You can upload up to 4 images per post");
+      return;
+    }
+
+    files.forEach(file => {
+      if (!file.type.startsWith('image/')) {
+        toast.error(`${file.name} is not a valid image file`);
+        return;
+      }
+      
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error(`${file.name} is too large. Maximum size is 5MB`);
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const imageData = {
+          id: Date.now() + Math.random(),
+          name: file.name,
+          data: event.target.result,
+          size: file.size
+        };
+        
+        setSelectedImages(prev => [...prev, imageData]);
+      };
+      reader.readAsDataURL(file);
+    });
+    
+    e.target.value = '';
+  };
+
+  const removeImage = (imageId) => {
+    setSelectedImages(prev => prev.filter(img => img.id !== imageId));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -41,10 +81,16 @@ const PostComposer = ({ onPostCreate }) => {
     try {
       await onPostCreate({
         content: content.trim(),
-        author: author.trim()
+        author: author.trim(),
+        images: selectedImages.map(img => ({
+          id: img.id,
+          name: img.name,
+          data: img.data
+        }))
       });
       
       setContent("");
+      setSelectedImages([]);
       toast.success("Your post has been shared! 🎉");
     } catch (error) {
       toast.error(error.message || "Failed to create post. Please try again.");
@@ -78,7 +124,7 @@ const PostComposer = ({ onPostCreate }) => {
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+<form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label htmlFor="author" className="block text-sm font-medium text-gray-700 mb-2">
             Your Name
@@ -127,6 +173,79 @@ const PostComposer = ({ onPostCreate }) => {
                 <span className={isOverLimit ? "text-error font-medium" : "text-warning"}>
                   {isOverLimit ? "Too long!" : "Almost there"}
                 </span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Images (Optional)
+          </label>
+          
+          <div className="space-y-3">
+            <div className="relative">
+              <input
+                type="file"
+                id="image-upload"
+                multiple
+                accept="image/*"
+                onChange={handleImageUpload}
+                disabled={isSubmitting || selectedImages.length >= 4}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
+              />
+              <div className={`
+                border-2 border-dashed rounded-lg p-6 text-center transition-all duration-200
+                ${selectedImages.length >= 4 
+                  ? 'border-gray-200 bg-gray-50 cursor-not-allowed' 
+                  : 'border-gray-300 hover:border-primary hover:bg-blue-50 cursor-pointer'
+                }
+              `}>
+                <div className="flex flex-col items-center gap-2">
+                  <ApperIcon 
+                    name="ImagePlus" 
+                    size={24} 
+                    className={selectedImages.length >= 4 ? "text-gray-400" : "text-gray-600"} 
+                  />
+                  <div className="text-sm">
+                    <span className={selectedImages.length >= 4 ? "text-gray-400" : "text-gray-600"}>
+                      {selectedImages.length >= 4 
+                        ? "Maximum 4 images reached" 
+                        : "Click to upload images or drag and drop"
+                      }
+                    </span>
+                    {selectedImages.length < 4 && (
+                      <p className="text-xs text-gray-500 mt-1">
+                        PNG, JPG up to 5MB each
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {selectedImages.length > 0 && (
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                {selectedImages.map((image) => (
+                  <div key={image.id} className="relative group">
+                    <img
+                      src={image.data}
+                      alt={image.name}
+                      className="w-full h-20 object-cover rounded-lg border border-gray-200"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeImage(image.id)}
+                      disabled={isSubmitting}
+                      className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600 transition-colors duration-200 disabled:opacity-50"
+                    >
+                      <ApperIcon name="X" size={12} />
+                    </button>
+                    <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-1 rounded-b-lg truncate">
+                      {image.name}
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
           </div>

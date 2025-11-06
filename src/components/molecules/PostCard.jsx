@@ -7,17 +7,24 @@ import ApperIcon from "@/components/ApperIcon";
 import CommentItem from "@/components/molecules/CommentItem";
 import CommentForm from "@/components/molecules/CommentForm";
 import Loading from "@/components/ui/Loading";
+import ImageModal from "@/components/molecules/ImageModal";
 import { cn } from "@/utils/cn";
 const PostCard = ({ post, className }) => {
   const timeAgo = formatDistanceToNow(new Date(post.timestamp), { addSuffix: true });
-const [isLiked, setIsLiked] = useState(post.isLiked || false);
+  const [isLiked, setIsLiked] = useState(post.isLiked || false);
   const [likeCount, setLikeCount] = useState(post.likeCount || 0);
   const [showComments, setShowComments] = useState(false);
   const [comments, setComments] = useState([]);
   const [commentsLoading, setCommentsLoading] = useState(false);
   const [showCommentForm, setShowCommentForm] = useState(false);
   const [commentCount, setCommentCount] = useState(0);
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
+  const openImageModal = (index) => {
+    setSelectedImageIndex(index);
+    setShowImageModal(true);
+  };
 const handleLike = async () => {
     const previousLiked = isLiked;
     const previousCount = likeCount;
@@ -128,6 +135,44 @@ return (
               {post.content}
             </p>
           </div>
+
+          {post.images && post.images.length > 0 && (
+            <div className={cn(
+              "mt-4 rounded-lg overflow-hidden",
+              post.images.length === 1 && "max-w-md",
+              post.images.length === 2 && "grid grid-cols-2 gap-2",
+              post.images.length === 3 && "grid grid-cols-2 gap-2",
+              post.images.length === 4 && "grid grid-cols-2 gap-2"
+            )}>
+              {post.images.map((image, index) => (
+                <div
+                  key={image.id}
+                  className={cn(
+                    "relative cursor-pointer overflow-hidden rounded-lg border border-gray-200 hover:opacity-90 transition-opacity duration-200",
+                    post.images.length === 1 && "aspect-[4/3]",
+                    post.images.length === 2 && "aspect-square",
+                    post.images.length === 3 && index === 0 && "row-span-2 aspect-[4/5]",
+                    post.images.length === 3 && index > 0 && "aspect-square",
+                    post.images.length === 4 && "aspect-square"
+                  )}
+                  onClick={() => openImageModal(index)}
+                >
+                  <img
+                    src={image.data}
+                    alt={image.name || `Image ${index + 1}`}
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-10 transition-all duration-200 flex items-center justify-center">
+                    <ApperIcon 
+                      name="Expand" 
+                      size={24} 
+                      className="text-white opacity-0 hover:opacity-100 transition-opacity duration-200" 
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
       
