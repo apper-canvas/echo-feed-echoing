@@ -102,7 +102,53 @@ const newPost = {
 
     const deletedPost = posts[index];
     posts.splice(index, 1);
-    savePosts();
+savePosts();
     return { ...deletedPost };
+  },
+
+  async likePost(id) {
+    await delay(200);
+    const index = posts.findIndex(p => p.Id === parseInt(id));
+    
+    if (index === -1) {
+      throw new Error("Post not found");
+    }
+
+    const post = posts[index];
+    if (post.isLiked) {
+      throw new Error("Post already liked");
+    }
+
+    posts[index] = {
+      ...post,
+      isLiked: true,
+      likeCount: (post.likeCount || 0) + 1
+    };
+
+    savePosts();
+    return { ...posts[index] };
+  },
+
+  async unlikePost(id) {
+    await delay(200);
+    const index = posts.findIndex(p => p.Id === parseInt(id));
+    
+    if (index === -1) {
+      throw new Error("Post not found");
+    }
+
+    const post = posts[index];
+    if (!post.isLiked) {
+      throw new Error("Post not liked");
+    }
+
+    posts[index] = {
+      ...post,
+      isLiked: false,
+      likeCount: Math.max((post.likeCount || 0) - 1, 0)
+    };
+
+    savePosts();
+    return { ...posts[index] };
   }
 };

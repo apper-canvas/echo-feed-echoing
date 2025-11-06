@@ -1,23 +1,44 @@
 import { formatDistanceToNow } from "date-fns";
 import React, { useEffect, useState } from "react";
-import CommentForm from "@/components/molecules/CommentForm";
-import CommentItem from "@/components/molecules/CommentItem";
+import { toast } from "react-toastify";
 import { commentService } from "@/services/api/commentService";
+import { postService } from "@/services/api/postService";
 import ApperIcon from "@/components/ApperIcon";
+import CommentItem from "@/components/molecules/CommentItem";
+import CommentForm from "@/components/molecules/CommentForm";
 import Loading from "@/components/ui/Loading";
 import { cn } from "@/utils/cn";
 const PostCard = ({ post, className }) => {
   const timeAgo = formatDistanceToNow(new Date(post.timestamp), { addSuffix: true });
-  const [isLiked, setIsLiked] = useState(post.isLiked || false);
+const [isLiked, setIsLiked] = useState(post.isLiked || false);
   const [likeCount, setLikeCount] = useState(post.likeCount || 0);
   const [showComments, setShowComments] = useState(false);
   const [comments, setComments] = useState([]);
   const [commentsLoading, setCommentsLoading] = useState(false);
   const [showCommentForm, setShowCommentForm] = useState(false);
 
-  const handleLike = () => {
+const handleLike = async () => {
+    const previousLiked = isLiked;
+    const previousCount = likeCount;
+    
+    // Optimistic update
     setIsLiked(!isLiked);
     setLikeCount(prev => isLiked ? prev - 1 : prev + 1);
+    
+    try {
+      if (isLiked) {
+        await postService.unlikePost(post.Id);
+        toast.success('Post unliked');
+      } else {
+        await postService.likePost(post.Id);
+        toast.success('Post liked!');
+      }
+    } catch (error) {
+      // Revert optimistic update on error
+      setIsLiked(previousLiked);
+      setLikeCount(previousCount);
+      toast.error('Failed to update like status');
+    }
   };
 
   const loadComments = async () => {
