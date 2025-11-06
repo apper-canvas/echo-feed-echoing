@@ -153,3 +153,73 @@ savePosts();
     return { ...posts[index] };
   }
 };
+
+// Saved Posts Management
+const SAVED_POSTS_KEY = "echo_feed_saved_posts";
+
+const getSavedPosts = () => {
+  try {
+    const saved = localStorage.getItem(SAVED_POSTS_KEY);
+    return saved ? JSON.parse(saved) : [];
+  } catch (error) {
+    console.error('Error loading saved posts:', error);
+    return [];
+  }
+};
+
+const savePost = (postId) => {
+  try {
+    const savedPosts = getSavedPosts();
+    if (!savedPosts.includes(postId)) {
+      savedPosts.push(postId);
+      localStorage.setItem(SAVED_POSTS_KEY, JSON.stringify(savedPosts));
+    }
+    return true;
+  } catch (error) {
+    console.error('Error saving post:', error);
+    return false;
+  }
+};
+
+const unsavePost = (postId) => {
+  try {
+    const savedPosts = getSavedPosts();
+    const updatedSaved = savedPosts.filter(id => id !== postId);
+    localStorage.setItem(SAVED_POSTS_KEY, JSON.stringify(updatedSaved));
+    return true;
+  } catch (error) {
+    console.error('Error unsaving post:', error);
+    return false;
+  }
+};
+
+const isPostSaved = (postId) => {
+  const savedPosts = getSavedPosts();
+  return savedPosts.includes(postId);
+};
+
+const sharePost = async (post) => {
+  try {
+    const postUrl = `${window.location.origin}/post/${post.Id}`;
+    const shareText = `Check out this post by ${post.author}: "${post.content.substring(0, 100)}${post.content.length > 100 ? '...' : ''}"`;
+    
+    // Try native sharing first (mobile devices)
+    if (navigator.share) {
+      await navigator.share({
+        title: `Post by ${post.author}`,
+        text: shareText,
+        url: postUrl,
+      });
+      return { success: true, method: 'native' };
+    } else {
+      // Fallback to clipboard
+      await navigator.clipboard.writeText(`${shareText}\n\n${postUrl}`);
+      return { success: true, method: 'clipboard' };
+    }
+  } catch (error) {
+    console.error('Error sharing post:', error);
+    return { success: false, error: error.message };
+  }
+};
+
+export { postService, getSavedPosts, savePost, unsavePost, isPostSaved, sharePost };

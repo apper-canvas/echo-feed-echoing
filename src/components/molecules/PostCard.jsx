@@ -7,8 +7,8 @@ import { postService } from "@/services/api/postService";
 import ApperIcon from "@/components/ApperIcon";
 import CommentItem from "@/components/molecules/CommentItem";
 import CommentForm from "@/components/molecules/CommentForm";
-import Loading from "@/components/ui/Loading";
 import ImageModal from "@/components/molecules/ImageModal";
+import Loading from "@/components/ui/Loading";
 import { cn } from "@/utils/cn";
 const PostCard = ({ post, className }) => {
   const timeAgo = formatDistanceToNow(new Date(post.timestamp), { addSuffix: true });
@@ -17,11 +17,11 @@ const PostCard = ({ post, className }) => {
   const [showComments, setShowComments] = useState(false);
   const [comments, setComments] = useState([]);
   const [commentsLoading, setCommentsLoading] = useState(false);
-  const [showCommentForm, setShowCommentForm] = useState(false);
+const [showCommentForm, setShowCommentForm] = useState(false);
   const [commentCount, setCommentCount] = useState(0);
   const [showImageModal, setShowImageModal] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
-
+  const [isSaved, setIsSaved] = useState(post.isSaved || false);
   const openImageModal = (index) => {
     setSelectedImageIndex(index);
     setShowImageModal(true);
@@ -93,6 +93,46 @@ const loadComments = async () => {
         await loadComments();
       }
     }
+};
+
+  const handleSave = async () => {
+    const previousSaved = isSaved;
+    
+    // Optimistic update
+    setIsSaved(!isSaved);
+    
+    try {
+      if (isSaved) {
+        await postService.unsavePost(post.Id);
+        toast.success('Post removed from saved');
+      } else {
+        await postService.savePost(post.Id);
+        toast.success('Post saved!');
+      }
+    } catch (error) {
+      // Revert optimistic update on error
+      setIsSaved(previousSaved);
+      toast.error('Failed to update save status');
+    }
+  };
+
+  const handleShare = async () => {
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: `Post by ${post.author}`,
+          text: post.content,
+          url: window.location.href
+        });
+      } else {
+        // Fallback: copy to clipboard
+        await navigator.clipboard.writeText(window.location.href);
+        toast.success('Post link copied to clipboard!');
+      }
+    } catch (error) {
+      console.error('Error sharing post:', error);
+      toast.error('Failed to share post');
+    }
   };
 
   // Load initial comment count
@@ -108,7 +148,8 @@ const loadComments = async () => {
     
     loadCommentCount();
   }, [post.Id]);
-return (
+
+  return (
     <div className={cn(
       "bg-white rounded-xl border border-gray-200 p-6 transition-all duration-200 hover:shadow-lg hover:-translate-y-1 group animate-slide-down shadow-md",
       className
@@ -201,13 +242,30 @@ return (
           </button>
         </div>
         
-        <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+<div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
           <div className="flex items-center gap-1 text-xs text-gray-400">
             <span>Post #{post.Id}</span>
           </div>
-          <button className="p-2 text-gray-400 hover:text-accent hover:bg-accent/10 rounded-lg transition-colors duration-200">
-            <ApperIcon name="Share2" size={16} />
-          </button>
+          <div className="flex items-center gap-1">
+            <button 
+              onClick={handleSave}
+              className={`p-2 rounded-lg transition-colors duration-200 ${
+                isSaved 
+                  ? 'text-accent bg-accent/10' 
+                  : 'text-gray-400 hover:text-accent hover:bg-accent/10'
+              }`}
+              title={isSaved ? 'Remove from saved' : 'Save post'}
+            >
+              <ApperIcon name={isSaved ? "Bookmark" : "BookmarkPlus"} size={16} />
+            </button>
+            <button 
+              onClick={handleShare}
+              className="p-2 text-gray-400 hover:text-accent hover:bg-accent/10 rounded-lg transition-colors duration-200"
+              title="Share post"
+            >
+              <ApperIcon name="Share2" size={16} />
+            </button>
+          </div>
         </div>
       </div>
 
@@ -260,7 +318,7 @@ return (
             </div>
           )}
         </div>
-      )}
+)}
       
       {/* Like Section */}
       <div className="mt-3 flex items-center justify-between">
@@ -283,11 +341,22 @@ return (
               )} 
             />
             <span className="text-sm font-medium transition-colors duration-200">
-{likeCount}
+              {likeCount}
             </span>
           </button>
         </div>
       </div>
+
+      {/* Image Modal */}
+      {showImageModal && post.images && post.images.length > 0 && (
+        <ImageModal
+          images={post.images}
+          selectedIndex={selectedImageIndex}
+          onClose={() => setShowImageModal(false)}
+          onNext={() => setSelectedImageIndex((prev) => (prev + 1) % post.images.length)}
+          onPrev={() => setSelectedImageIndex((prev) => (prev - 1 + post.images.length) % post.images.length)}
+        />
+      )}
     </div>
   );
 };
