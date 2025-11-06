@@ -55,12 +55,13 @@ export const postService = {
     const maxId = posts.length > 0 ? Math.max(...posts.map(p => p.Id)) : 0;
     const now = Date.now();
     
-    const newPost = {
+const newPost = {
       Id: maxId + 1,
       author: postData.author || "Anonymous",
       content: postData.content.trim(),
       timestamp: now,
-      createdAt: new Date(now).toISOString()
+      createdAt: new Date(now).toISOString(),
+      comments: []
     };
 
     posts.push(newPost);

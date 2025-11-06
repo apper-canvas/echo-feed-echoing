@@ -1,10 +1,10 @@
 import { useState, useRef } from "react";
 import { toast } from "react-toastify";
 import { postService } from "@/services/api/postService";
+import { commentService } from "@/services/api/commentService";
 import PostComposer from "@/components/molecules/PostComposer";
 import FeedContainer from "@/components/organisms/FeedContainer";
 import ApperIcon from "@/components/ApperIcon";
-
 const Feed = () => {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const composerRef = useRef(null);
