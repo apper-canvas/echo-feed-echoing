@@ -222,4 +222,4 @@ const sharePost = async (post) => {
   }
 };
 
-export { postService, getSavedPosts, savePost, unsavePost, isPostSaved, sharePost };
+export { getSavedPosts, savePost, unsavePost, isPostSaved, sharePost };
